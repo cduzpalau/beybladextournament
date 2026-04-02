@@ -149,22 +149,33 @@ th {
 
 .score-input-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   gap: 0.5rem;
   margin: 1rem 0;
 }
 
+.battle-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
 @media (max-width: 480px) {
+  .battle-buttons-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .score-input-row {
     gap: 0.2rem;
   }
-  
+
   .score-player img {
-    width: 30px !important;
-    height: 30px !important;
+    width: 45px !important;
+    height: 45px !important;
   }
-  
+...
+
   .score-player .impact-text {
     font-size: 0.8rem !important;
   }

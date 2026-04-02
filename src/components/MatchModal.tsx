@@ -52,12 +52,11 @@ const MatchModal = ({ match, p1, p2, onClose, onSave }: MatchModalProps) => {
     setCurrentP1Points(nextP1Points);
     setCurrentP2Points(nextP2Points);
     
-    // 3on3 rotation: use next Bey (loop 0-1-2)
+    // 3on3 rotation
     setCurrentBeyIndex((prev) => (prev + 1) % 3);
 
     setHistory([...history, { set: currentSet, p1: p1Add, p2: p2Add, finish: type }]);
 
-    // Check for Set win (4 points)
     if (nextP1Points >= 4) {
       const newSets = p1Sets + 1;
       setP1Sets(newSets);
@@ -97,81 +96,81 @@ const MatchModal = ({ match, p1, p2, onClose, onSave }: MatchModalProps) => {
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content" style={{ maxWidth: '600px' }}>
+      <div className="modal-content">
         <button className="modal-close" onClick={onClose} style={{ position: 'absolute', top: '10px', right: '10px', background: 'none', border: 'none', color: 'white' }}>
           <X size={24} />
         </button>
 
-        <div className="text-center mb-2">
-          <h2 className="impact-text text-primary">BATALLA 3on3</h2>
-          <p className="impact-text" style={{ color: 'var(--color-accent-blue)' }}>Set {currentSet} - Best of 3 [4-Point]</p>
+        <div className="text-center mb-1">
+          <h2 className="impact-text text-primary" style={{ fontSize: '1.2rem' }}>BATALLA 3on3</h2>
+          <p className="impact-text" style={{ color: 'var(--color-accent-blue)', fontSize: '0.8rem' }}>Set {currentSet} - Best of 3 [4-Point]</p>
         </div>
 
         {/* Scoreboard */}
-        <div className="flex justify-between items-center mb-2 card" style={{ background: '#000' }}>
+        <div className="flex justify-between items-center mb-1 card" style={{ background: '#000', padding: '0.75rem' }}>
           <div className="text-center flex-1">
-            <img src={p1.avatar} alt="" style={{ width: '40px' }} />
-            <div className="impact-text" style={{ fontSize: '1.2rem' }}>{p1.nickname}</div>
-            <div className="text-primary impact-text" style={{ fontSize: '2rem' }}>{p1Sets}</div>
-            <div style={{ color: 'var(--color-text-dim)', fontSize: '0.8rem' }}>SETS</div>
+            <img src={p1.avatar} alt="" style={{ width: '45px' }} />
+            <div className="impact-text" style={{ fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p1.nickname}</div>
+            <div className="text-primary impact-text" style={{ fontSize: '1.8rem' }}>{p1Sets}</div>
           </div>
           
-          <div className="impact-text" style={{ fontSize: '1.5rem', padding: '0 1rem' }}>VS</div>
+          <div className="impact-text" style={{ fontSize: '1.2rem', padding: '0 0.5rem' }}>VS</div>
 
           <div className="text-center flex-1">
-            <img src={p2.avatar} alt="" style={{ width: '40px' }} />
-            <div className="impact-text" style={{ fontSize: '1.2rem' }}>{p2.nickname}</div>
-            <div className="text-primary impact-text" style={{ fontSize: '2rem' }}>{p2Sets}</div>
-            <div style={{ color: 'var(--color-text-dim)', fontSize: '0.8rem' }}>SETS</div>
+            <img src={p2.avatar} alt="" style={{ width: '45px' }} />
+            <div className="impact-text" style={{ fontSize: '0.9rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p2.nickname}</div>
+            <div className="text-primary impact-text" style={{ fontSize: '1.8rem' }}>{p2Sets}</div>
           </div>
         </div>
 
-        {/* Current Set Points */}
-        <div className="flex justify-center gap-2 mb-2">
-          <div className="card" style={{ padding: '0.5rem 1rem', borderColor: 'var(--color-primary)' }}>
-            <span className="impact-text" style={{ fontSize: '1.2rem' }}>{currentP1Points}</span>
-          </div>
-          <div className="flex items-center impact-text" style={{ fontSize: '0.7rem' }}>PUNTS SET {currentSet}</div>
-          <div className="card" style={{ padding: '0.5rem 1rem', borderColor: 'var(--color-primary)' }}>
-            <span className="impact-text" style={{ fontSize: '1.2rem' }}>{currentP2Points}</span>
+        {/* Current Set Points Centered */}
+        <div className="flex flex-col items-center mb-1">
+          <div className="flex items-center gap-2">
+            <div className="card" style={{ padding: '0.4rem 0.8rem', background: '#000', borderColor: 'var(--color-primary)' }}>
+              <span className="impact-text" style={{ fontSize: '1.2rem' }}>{currentP1Points}</span>
+            </div>
+            <div className="impact-text" style={{ fontSize: '0.6rem', color: 'var(--color-text-dim)' }}>PUNTS SET {currentSet}</div>
+            <div className="card" style={{ padding: '0.4rem 0.8rem', background: '#000', borderColor: 'var(--color-primary)' }}>
+              <span className="impact-text" style={{ fontSize: '1.2rem' }}>{currentP2Points}</span>
+            </div>
           </div>
         </div>
 
         {!isMatchFinished ? (
           <>
-            <div className="text-center mb-1 impact-text" style={{ fontSize: '0.8rem' }}>
+            <div className="text-center mb-1 impact-text" style={{ fontSize: '0.7rem' }}>
               Bey actual: <span className="text-primary">#{currentBeyIndex + 1}</span>
             </div>
 
             <div className="flex flex-col gap-1">
-              <div className="flex gap-1">
+              <div className="battle-buttons-grid">
                 <button 
-                  className="flex-1 flex flex-col items-center gap-0.5" 
+                  className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p1', 'xtreme')}
-                  style={{ background: 'var(--color-primary)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
+                  style={{ background: 'var(--color-primary)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
                 >
-                  <Zap size={14} /> Xtreme (3)
+                  <Zap size={18} /> Xtreme (3)
                 </button>
                 <button 
-                  className="flex-1 flex flex-col items-center gap-0.5" 
+                  className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p1', 'over')}
-                  style={{ background: 'var(--color-accent-blue)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
+                  style={{ background: 'var(--color-accent-blue)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
                 >
-                  <Shield size={14} /> Over (2)
+                  <Shield size={18} /> Over (2)
                 </button>
                 <button 
-                  className="flex-1 flex flex-col items-center gap-0.5" 
+                  className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p1', 'burst')}
-                  style={{ background: 'var(--color-accent-red)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
+                  style={{ background: 'var(--color-accent-red)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
                 >
-                  <Sword size={14} /> Burst (2)
+                  <Sword size={18} /> Burst (2)
                 </button>
                 <button 
-                  className="flex-1 flex flex-col items-center gap-0.5" 
+                  className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p1', 'spin')}
-                  style={{ background: 'var(--color-text-dim)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
+                  style={{ background: 'var(--color-text-dim)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
                 >
-                  <RotateCcw size={14} /> Spin (1)
+                  <RotateCcw size={18} /> Spin (1)
                 </button>
               </div>
               
@@ -179,40 +178,40 @@ const MatchModal = ({ match, p1, p2, onClose, onSave }: MatchModalProps) => {
                 TRIAR GUANYADOR DE LA BATALLA
               </div>
 
-              <div className="flex gap-1">
+              <div className="battle-buttons-grid">
                 <button 
-                  className="flex-1 flex flex-col items-center gap-0.5" 
+                  className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p2', 'xtreme')}
-                  style={{ background: 'var(--color-primary)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
+                  style={{ background: 'var(--color-primary)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
                 >
-                  <Zap size={14} /> Xtreme (3)
+                  <Zap size={18} /> Xtreme (3)
                 </button>
                 <button 
-                  className="flex-1 flex flex-col items-center gap-0.5" 
+                  className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p2', 'over')}
-                  style={{ background: 'var(--color-accent-blue)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
+                  style={{ background: 'var(--color-accent-blue)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
                 >
-                  <Shield size={14} /> Over (2)
+                  <Shield size={18} /> Over (2)
                 </button>
                 <button 
-                  className="flex-1 flex flex-col items-center gap-0.5" 
+                  className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p2', 'burst')}
-                  style={{ background: 'var(--color-accent-red)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
+                  style={{ background: 'var(--color-accent-red)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
                 >
-                  <Sword size={14} /> Burst (2)
+                  <Sword size={18} /> Burst (2)
                 </button>
                 <button 
-                  className="flex-1 flex flex-col items-center gap-0.5" 
+                  className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p2', 'spin')}
-                  style={{ background: 'var(--color-text-dim)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
+                  style={{ background: 'var(--color-text-dim)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
                 >
-                  <RotateCcw size={14} /> Spin (1)
+                  <RotateCcw size={18} /> Spin (1)
                 </button>
               </div>
               
               <button 
-                className="mt-1" 
-                style={{ background: 'none', border: '1px solid var(--color-border)', color: 'var(--color-text-dim)' }}
+                className="mt-0.5" 
+                style={{ background: 'none', border: '1px solid var(--color-border)', color: 'var(--color-text-dim)', padding: '0.5rem', fontSize: '0.7rem' }}
                 onClick={() => handleFinish('draw', 'draw')}
               >
                 Empat (Re-llançament)
@@ -220,10 +219,10 @@ const MatchModal = ({ match, p1, p2, onClose, onSave }: MatchModalProps) => {
             </div>
           </>
         ) : (
-          <div className="text-center mt-2">
-            <Award size={48} className="text-primary mb-1" style={{ margin: '0 auto' }} />
-            <h2 className="impact-text">PARTIT FINALITZAT</h2>
-            <p className="mb-2">Guanyador: <span className="text-primary">{p1Sets >= 2 ? p1.nickname : p2.nickname}</span></p>
+          <div className="text-center mt-1">
+            <Award size={40} className="text-primary mb-0.5" style={{ margin: '0 auto' }} />
+            <h2 className="impact-text" style={{ fontSize: '1.2rem' }}>PARTIT FINALITZAT</h2>
+            <p className="mb-1" style={{ fontSize: '0.9rem' }}>Guanyador: <span className="text-primary">{p1Sets >= 2 ? p1.nickname : p2.nickname}</span></p>
             <div className="flex gap-1">
               <button onClick={() => {
                 if(confirm('Vols esborrar el resultat i tornar a començar aquest partit?')) {
@@ -233,17 +232,17 @@ const MatchModal = ({ match, p1, p2, onClose, onSave }: MatchModalProps) => {
                   resetSet();
                   setCurrentSet(1);
                 }
-              }} style={{ background: 'var(--color-accent-red)', flex: 1, fontSize: '0.8rem' }}>Corregir</button>
-              <button onClick={handleSave} style={{ flex: 2 }}>Guardar i Tancar</button>
+              }} style={{ background: 'var(--color-accent-red)', flex: 1, fontSize: '0.8rem', padding: '0.75rem' }}>Corregir</button>
+              <button onClick={handleSave} style={{ flex: 2, padding: '0.75rem' }}>Guardar i Tancar</button>
             </div>
           </div>
         )}
 
-        <div className="mt-2" style={{ maxHeight: '100px', overflowY: 'auto', fontSize: '0.7rem' }}>
+        <div className="mt-1" style={{ maxHeight: '120px', overflowY: 'auto', fontSize: '0.65rem' }}>
           <table style={{ margin: 0 }}>
             <thead>
               <tr>
-                <th>Ronda</th>
+                <th>Set</th>
                 <th>Blader</th>
                 <th>Tipus</th>
                 <th>PTS</th>
@@ -252,8 +251,8 @@ const MatchModal = ({ match, p1, p2, onClose, onSave }: MatchModalProps) => {
             <tbody>
               {history.map((h, i) => (
                 <tr key={i}>
-                  <td>Set {h.set}</td>
-                  <td>{h.p1 > h.p2 ? p1.nickname : (h.p2 > h.p1 ? p2.nickname : 'Empat')}</td>
+                  <td>{h.set}</td>
+                  <td style={{ whiteSpace: 'nowrap' }}>{h.p1 > h.p2 ? p1.nickname : (h.p2 > h.p1 ? p2.nickname : 'Empat')}</td>
                   <td style={{ textTransform: 'uppercase' }}>{h.finish}</td>
                   <td>{Math.max(h.p1, h.p2)}</td>
                 </tr>
