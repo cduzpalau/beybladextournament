@@ -1,0 +1,140 @@
+:root {
+  --color-bg: #0a0a0c;
+  --color-surface: #1a1b1f;
+  --color-border: #3f414a;
+  --color-text: #e1e1e6;
+  --color-text-dim: #a1a1aa;
+  
+  --color-primary: #1aff80; /* Xtreme Dash Green */
+  --color-primary-glow: rgba(26, 255, 128, 0.4);
+  --color-accent-blue: #00d2ff;
+  --color-accent-red: #ff3e3e;
+  
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Impact', 'Arial Black', sans-serif; /* Fallback to Impact for heavy feel */
+
+  --shadow-glow: 0 0 15px var(--color-primary-glow);
+  --clip-angled: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  --clip-angled-reverse: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 10px 100%);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg);
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(26, 255, 128, 0.05) 0%, transparent 50%),
+    linear-gradient(var(--color-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+  background-attachment: fixed;
+  color: var(--color-text);
+  font-family: var(--font-main);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .impact-text {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background-color: var(--color-primary);
+  color: #000;
+  clip-path: var(--clip-angled);
+  transition: all 0.2s ease;
+  font-weight: bold;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+  filter: brightness(1.1);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 1.5rem;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: var(--color-primary);
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #000;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-family: var(--font-main);
+  margin-bottom: 1rem;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 5px var(--color-primary-glow);
+}
+
+/* Utilities */
+.text-primary { color: var(--color-primary); }
+.text-center { text-align: center; }
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.mb-1 { margin-bottom: 1rem; }
+.mb-2 { margin-bottom: 2rem; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+@media (max-width: 600px) {
+  .setup-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  h1 {
+    font-size: 2.5rem !important;
+  }
+  
+  .score-input-row {
+    gap: 0.5rem;
+  }
+  
+  .points-input {
+    width: 50px;
+    font-size: 1.5rem;
+  }
+}
