@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PREDEFINED_PARTICIPANTS } from '../constants';
 import type { Participant, Tournament } from '../types';
-import { Save, AlertTriangle, Download, Upload, RefreshCw } from 'lucide-react';
-
+import { Save, Download, Upload, RefreshCw, Loader2 } from 'lucide-react';
+import { getTournament, saveTournament as apiSaveTournament } from '../api';
 import { generateTournament } from '../logic';
 
 const Setup = () => {
@@ -13,12 +13,14 @@ const Setup = () => {
   const [nicknames, setNicknames] = useState<Record<string, string>>({});
   const [hasExisting, setHasExisting] = useState(false);
   const [existingTournament, setExistingTournament] = useState<Tournament | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('beyblade_tournament');
-    if (saved) {
-      try {
-        const tournament: Tournament = JSON.parse(saved);
+    const loadData = async () => {
+      setLoading(true);
+      const tournament = await getTournament();
+      if (tournament && tournament.participants) {
         setExistingTournament(tournament);
         setTitle(tournament.title);
         const existingNicknames: Record<string, string> = {};
@@ -27,10 +29,10 @@ const Setup = () => {
         });
         setNicknames(existingNicknames);
         setHasExisting(true);
-      } catch (e) {
-        console.error('Error loading existing tournament', e);
       }
-    }
+      setLoading(false);
+    };
+    loadData();
   }, []);
 
   const handleNicknameChange = (name: string, nickname: string) => {
@@ -42,7 +44,7 @@ const Setup = () => {
     return `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
   };
 
-  const handleStartTournament = () => {
+  const handleStartTournament = async () => {
     const participants: Participant[] = PREDEFINED_PARTICIPANTS.map(p => ({
       id: p.name.toLowerCase(),
       name: p.name,
@@ -55,12 +57,14 @@ const Setup = () => {
       return;
     }
 
+    setSaving(true);
     const tournament = generateTournament(title, participants);
-    localStorage.setItem('beyblade_tournament', JSON.stringify(tournament));
+    await apiSaveTournament(tournament);
+    setSaving(false);
     navigate('/groups');
   };
 
-  const handleUpdateOnly = () => {
+  const handleUpdateOnly = async () => {
     if (!existingTournament) return;
 
     const updatedParticipants = existingTournament.participants.map(p => ({
@@ -75,15 +79,16 @@ const Setup = () => {
       participants: updatedParticipants
     };
 
-    localStorage.setItem('beyblade_tournament', JSON.stringify(updated));
-    alert('Dades actualitzades sense reiniciar el torneig!');
+    setSaving(true);
+    await apiSaveTournament(updated);
+    setSaving(false);
+    alert('Dades actualitzades!');
     navigate('/groups');
   };
 
   const handleExport = () => {
-    const data = localStorage.getItem('beyblade_tournament');
-    if (!data) return;
-    const blob = new Blob([data], { type: 'application/json' });
+    if (!existingTournament) return;
+    const blob = new Blob([JSON.stringify(existingTournament)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -91,15 +96,17 @@ const Setup = () => {
     a.click();
   };
 
-  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const json = JSON.parse(e.target?.result as string);
         if (json.participants && json.matches) {
-          localStorage.setItem('beyblade_tournament', JSON.stringify(json));
+          setSaving(true);
+          await apiSaveTournament(json);
+          setSaving(false);
           window.location.reload();
         } else {
           alert('Format de fitxer invàlid');
@@ -111,15 +118,12 @@ const Setup = () => {
     reader.readAsText(file);
   };
 
-  const handleReset = () => {
-    if (confirm('Vols esborrar totes les dades del torneig actual?')) {
-      localStorage.removeItem('beyblade_tournament');
-      setNicknames({});
-      setTitle('Campionat de Navarra 2026');
-      setHasExisting(false);
-      setExistingTournament(null);
-    }
-  };
+  if (loading) return (
+    <div className="container mt-2 flex flex-col items-center">
+      <Loader2 className="animate-spin text-primary" size={48} />
+      <p className="mt-1 impact-text">Carregant dades...</p>
+    </div>
+  );
 
   return (
     <div className="container mt-2">
@@ -142,6 +146,7 @@ const Setup = () => {
           value={title} 
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Ex: Gran Torneig de la Casa Rural"
+          disabled={saving}
         />
       </div>
 
@@ -159,6 +164,7 @@ const Setup = () => {
               value={nicknames[p.name] || ''}
               onChange={(e) => handleNicknameChange(p.name, e.target.value)}
               style={{ padding: '0.4rem', fontSize: '0.8rem', marginTop: '0.5rem' }}
+              disabled={saving}
             />
           </div>
         ))}
@@ -167,18 +173,16 @@ const Setup = () => {
       <div className="mt-2 flex flex-col gap-1">
         <div className="flex gap-1">
           {hasExisting && (
-            <button onClick={handleUpdateOnly} className="flex-1 flex items-center justify-center gap-1" style={{ background: 'var(--color-accent-blue)' }}>
-              <RefreshCw size={20} /> Actualitzar Noms
+            <button onClick={handleUpdateOnly} disabled={saving} className="flex-1 flex items-center justify-center gap-1" style={{ background: 'var(--color-accent-blue)' }}>
+              {saving ? <Loader2 className="animate-spin" size={20} /> : <RefreshCw size={20} />} 
+              Actualitzar Noms
             </button>
           )}
-          <button onClick={handleStartTournament} className="flex-1 flex items-center justify-center gap-1">
-            <Save size={20} />
+          <button onClick={handleStartTournament} disabled={saving} className="flex-1 flex items-center justify-center gap-1">
+            {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
             {hasExisting ? 'Reiniciar i Regenerar' : 'Començar Torneig'}
           </button>
         </div>
-        <button onClick={handleReset} style={{ background: 'var(--color-accent-red)', opacity: 0.8 }}>
-          Esborrar Tot
-        </button>
       </div>
     </div>
   );

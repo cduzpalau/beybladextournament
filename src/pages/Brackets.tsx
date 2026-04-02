@@ -2,40 +2,58 @@ import { useEffect, useState } from 'react';
 import type { Tournament, Match } from '../types';
 import { advanceKnockout } from '../logic';
 import MatchModal from '../components/MatchModal';
-import { Trophy } from 'lucide-react';
+import { Trophy, Loader2 } from 'lucide-react';
+import { getTournament, saveTournament as apiSaveTournament } from '../api';
+import { useNavigate } from 'react-router-dom';
 
 const Brackets = () => {
+  const navigate = useNavigate();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('beyblade_tournament');
-    if (saved) {
-      try {
-        setTournament(JSON.parse(saved));
-      } catch (e) {
-        console.error('Error parsing tournament data', e);
-      }
-    }
+    const loadData = async () => {
+      setLoading(true);
+      const data = await getTournament();
+      if (data) setTournament(data);
+      setLoading(false);
+    };
+    loadData();
   }, []);
 
-  const saveTournament = (updated: Tournament) => {
+  const saveTournament = async (updated: Tournament) => {
+    setSaving(true);
     setTournament(updated);
-    localStorage.setItem('beyblade_tournament', JSON.stringify(updated));
+    await apiSaveTournament(updated);
+    setSaving(false);
   };
 
-  const handleMatchSave = (updatedMatch: Match) => {
+  const handleMatchSave = async (updatedMatch: Match) => {
     if (!tournament) return;
     let newMatches = tournament.matches.map(m => m.id === updatedMatch.id ? updatedMatch : m);
     let updatedTournament = { ...tournament, matches: newMatches };
     
     updatedTournament = advanceKnockout(updatedTournament);
     
-    saveTournament(updatedTournament);
+    await saveTournament(updatedTournament);
     setEditingMatch(null);
   };
 
-  if (!tournament) return <div className="container mt-2">Carregant...</div>;
+  if (loading) return (
+    <div className="container mt-2 flex flex-col items-center">
+      <Loader2 className="animate-spin text-primary" size={48} />
+      <p className="mt-1 impact-text">Carregant eliminatòries...</p>
+    </div>
+  );
+
+  if (!tournament) return (
+    <div className="container mt-2 text-center">
+      <p className="mb-2">No s'ha trobat cap torneig actiu.</p>
+      <button onClick={() => navigate('/setup')}>Anar a Configuració</button>
+    </div>
+  );
 
   const knockoutMatches = tournament.matches.filter(m => m.stage === 'knockout');
   const rounds = Array.from(new Set(knockoutMatches.map(m => m.round || 0))).sort((a, b) => a - b);
@@ -51,7 +69,10 @@ const Brackets = () => {
 
   return (
     <div className="container mt-2">
-      <h2 className="mb-2 text-primary impact-text">Fase Final</h2>
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-primary impact-text">Fase Final</h2>
+        {saving && <Loader2 className="animate-spin text-primary" size={20} />}
+      </div>
       
       {rounds.length === 0 && (
         <div className="card text-center">

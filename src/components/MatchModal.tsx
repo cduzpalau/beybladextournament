@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { Match, Participant } from '../types';
 import { X, Sword, Shield, Zap, RotateCcw, Award } from 'lucide-react';
 

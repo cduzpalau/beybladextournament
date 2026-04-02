@@ -3,37 +3,42 @@ import { useNavigate } from 'react-router-dom';
 import type { Tournament, Match } from '../types';
 import { calculateStandings, generateBrackets } from '../logic';
 import MatchModal from '../components/MatchModal';
+import { getTournament, saveTournament as apiSaveTournament } from '../api';
+import { Loader2 } from 'lucide-react';
 
 const GroupStage = () => {
   const navigate = useNavigate();
   const [tournament, setTournament] = useState<Tournament | null>(null);
   const [activeGroupId, setActiveGroupId] = useState('group_A');
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('beyblade_tournament');
-    if (saved) {
-      try {
-        setTournament(JSON.parse(saved));
-      } catch (e) {
-        console.error('Error parsing tournament data', e);
-      }
-    }
+    const loadData = async () => {
+      setLoading(true);
+      const data = await getTournament();
+      if (data) setTournament(data);
+      setLoading(false);
+    };
+    loadData();
   }, []);
 
-  const saveTournament = (updated: Tournament) => {
+  const saveTournament = async (updated: Tournament) => {
+    setSaving(true);
     setTournament(updated);
-    localStorage.setItem('beyblade_tournament', JSON.stringify(updated));
+    await apiSaveTournament(updated);
+    setSaving(false);
   };
 
-  const handleMatchSave = (updatedMatch: Match) => {
+  const handleMatchSave = async (updatedMatch: Match) => {
     if (!tournament) return;
     const newMatches = tournament.matches.map(m => m.id === updatedMatch.id ? updatedMatch : m);
-    saveTournament({ ...tournament, matches: newMatches });
+    await saveTournament({ ...tournament, matches: newMatches });
     setEditingMatch(null);
   };
 
-  const handleAdvanceToBrackets = () => {
+  const handleAdvanceToBrackets = async () => {
     if (!tournament) return;
     
     const allFinished = tournament.matches.filter(m => m.stage === 'group').every(m => m.status === 'finished');
@@ -42,11 +47,23 @@ const GroupStage = () => {
     }
 
     const updated = generateBrackets(tournament);
-    saveTournament(updated);
+    await saveTournament(updated);
     navigate('/bracket');
   };
 
-  if (!tournament) return <div className="container mt-2">Carregant...</div>;
+  if (loading) return (
+    <div className="container mt-2 flex flex-col items-center">
+      <Loader2 className="animate-spin text-primary" size={48} />
+      <p className="mt-1 impact-text">Carregant grups...</p>
+    </div>
+  );
+
+  if (!tournament) return (
+    <div className="container mt-2 text-center">
+      <p className="mb-2">No s'ha trobat cap torneig actiu.</p>
+      <button onClick={() => navigate('/setup')}>Anar a Configuració</button>
+    </div>
+  );
 
   const activeGroup = tournament.groups.find(g => g.id === activeGroupId)!;
   const groupMatches = tournament.matches.filter(m => m.groupId === activeGroupId);
@@ -56,7 +73,10 @@ const GroupStage = () => {
 
   return (
     <div className="container mt-2">
-      <h2 className="mb-2 text-primary impact-text">{tournament.title}</h2>
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-primary impact-text">{tournament.title}</h2>
+        {saving && <Loader2 className="animate-spin text-primary" size={20} />}
+      </div>
       
       <div className="flex gap-1 mb-2">
         {tournament.groups.map(g => (
@@ -150,8 +170,9 @@ const GroupStage = () => {
         <button 
           style={{ background: 'var(--color-accent-blue)', opacity: 0.8 }}
           onClick={handleAdvanceToBrackets}
+          disabled={saving}
         >
-          Generar Eliminatòries
+          {saving ? 'Guardant...' : 'Generar Eliminatòries'}
         </button>
       </div>
     </div>
