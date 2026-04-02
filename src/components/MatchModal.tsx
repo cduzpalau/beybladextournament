@@ -148,30 +148,30 @@ const MatchModal = ({ match, p1, p2, onClose, onSave }: MatchModalProps) => {
                 <button 
                   className="flex-1 flex flex-col items-center gap-0.5" 
                   onClick={() => handleFinish('p1', 'xtreme')}
-                  style={{ background: 'var(--color-primary)', color: '#000', fontSize: '0.7rem' }}
+                  style={{ background: 'var(--color-primary)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
                 >
-                  <Zap size={16} /> Xtreme (3)
+                  <Zap size={14} /> Xtreme (3)
                 </button>
                 <button 
                   className="flex-1 flex flex-col items-center gap-0.5" 
                   onClick={() => handleFinish('p1', 'over')}
-                  style={{ background: 'var(--color-accent-blue)', color: '#000', fontSize: '0.7rem' }}
+                  style={{ background: 'var(--color-accent-blue)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
                 >
-                  <Shield size={16} /> Over (2)
+                  <Shield size={14} /> Over (2)
                 </button>
                 <button 
                   className="flex-1 flex flex-col items-center gap-0.5" 
                   onClick={() => handleFinish('p1', 'burst')}
-                  style={{ background: 'var(--color-accent-red)', color: '#000', fontSize: '0.7rem' }}
+                  style={{ background: 'var(--color-accent-red)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
                 >
-                  <Sword size={16} /> Burst (2)
+                  <Sword size={14} /> Burst (2)
                 </button>
                 <button 
                   className="flex-1 flex flex-col items-center gap-0.5" 
                   onClick={() => handleFinish('p1', 'spin')}
-                  style={{ background: 'var(--color-text-dim)', color: '#000', fontSize: '0.7rem' }}
+                  style={{ background: 'var(--color-text-dim)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
                 >
-                  <RotateCcw size={16} /> Spin (1)
+                  <RotateCcw size={14} /> Spin (1)
                 </button>
               </div>
               
@@ -183,30 +183,30 @@ const MatchModal = ({ match, p1, p2, onClose, onSave }: MatchModalProps) => {
                 <button 
                   className="flex-1 flex flex-col items-center gap-0.5" 
                   onClick={() => handleFinish('p2', 'xtreme')}
-                  style={{ background: 'var(--color-primary)', color: '#000', fontSize: '0.7rem' }}
+                  style={{ background: 'var(--color-primary)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
                 >
-                  <Zap size={16} /> Xtreme (3)
+                  <Zap size={14} /> Xtreme (3)
                 </button>
                 <button 
                   className="flex-1 flex flex-col items-center gap-0.5" 
                   onClick={() => handleFinish('p2', 'over')}
-                  style={{ background: 'var(--color-accent-blue)', color: '#000', fontSize: '0.7rem' }}
+                  style={{ background: 'var(--color-accent-blue)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
                 >
-                  <Shield size={16} /> Over (2)
+                  <Shield size={14} /> Over (2)
                 </button>
                 <button 
                   className="flex-1 flex flex-col items-center gap-0.5" 
                   onClick={() => handleFinish('p2', 'burst')}
-                  style={{ background: 'var(--color-accent-red)', color: '#000', fontSize: '0.7rem' }}
+                  style={{ background: 'var(--color-accent-red)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
                 >
-                  <Sword size={16} /> Burst (2)
+                  <Sword size={14} /> Burst (2)
                 </button>
                 <button 
                   className="flex-1 flex flex-col items-center gap-0.5" 
                   onClick={() => handleFinish('p2', 'spin')}
-                  style={{ background: 'var(--color-text-dim)', color: '#000', fontSize: '0.7rem' }}
+                  style={{ background: 'var(--color-text-dim)', color: '#000', fontSize: '0.65rem', padding: '0.5rem 0.2rem' }}
                 >
-                  <RotateCcw size={16} /> Spin (1)
+                  <RotateCcw size={14} /> Spin (1)
                 </button>
               </div>
               
