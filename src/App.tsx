@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Trophy, Users, Settings } from 'lucide-react';
 import './App.css';
 import Home from './pages/Home';
@@ -7,6 +7,7 @@ import GroupStage from './pages/GroupStage';
 import Brackets from './pages/Brackets';
 
 function App() {
+  console.log('App rendering...');
   return (
     <Router>
       <div className="app-shell">
