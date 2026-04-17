@@ -10,7 +10,17 @@ const Setup = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState('Campionat de Navarra 2026');
-  const [nicknames, setNicknames] = useState<Record<string, string>>({});
+  
+  const [participants, setParticipants] = useState<Participant[]>(
+    PREDEFINED_PARTICIPANTS.map(p => ({
+      id: p.name.toLowerCase().replace(/\s+/g, '-'),
+      name: p.name,
+      nickname: '',
+      avatar: '',
+      age: p.age
+    }))
+  );
+  
   const [hasExisting, setHasExisting] = useState(false);
   const [existingTournament, setExistingTournament] = useState<Tournament | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,11 +33,8 @@ const Setup = () => {
       if (tournament && tournament.participants) {
         setExistingTournament(tournament);
         setTitle(tournament.title);
-        const existingNicknames: Record<string, string> = {};
-        tournament.participants.forEach(p => {
-          existingNicknames[p.name] = p.nickname;
-        });
-        setNicknames(existingNicknames);
+        // Ensure to preserve exactly existing participants layout
+        setParticipants(tournament.participants);
         setHasExisting(true);
       }
       setLoading(false);
@@ -35,22 +42,25 @@ const Setup = () => {
     loadData();
   }, []);
 
-  const handleNicknameChange = (name: string, nickname: string) => {
-    setNicknames(prev => ({ ...prev, [name]: nickname }));
+  const handleParticipantChange = (index: number, field: keyof Participant, value: string | number) => {
+    setParticipants(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
   };
 
-  const getAvatarUrl = (nickname: string) => {
-    const seed = nickname || 'default';
+  const getAvatarUrl = (seedName: string) => {
+    const seed = seedName || 'default';
     return `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
   };
 
   const handleStartTournament = async () => {
-    const participants: Participant[] = PREDEFINED_PARTICIPANTS.map(p => ({
-      id: p.name.toLowerCase(),
-      name: p.name,
-      nickname: nicknames[p.name] || p.name,
-      avatar: getAvatarUrl(nicknames[p.name]),
-      age: p.age
+    const finalParticipants: Participant[] = participants.map(p => ({
+      ...p,
+      id: p.id || p.name.toLowerCase().replace(/\s+/g, '-'),
+      nickname: p.nickname || p.name,
+      avatar: getAvatarUrl(p.nickname || p.name)
     }));
 
     if (hasExisting && !confirm('Això regenerarà el torneig COMPLETAMENT (grups i partits) i esborrarà el progrés actual. Estàs segur?')) {
@@ -58,7 +68,7 @@ const Setup = () => {
     }
 
     setSaving(true);
-    const tournament = generateTournament(title, participants);
+    const tournament = generateTournament(title, finalParticipants);
     await apiSaveTournament(tournament);
     setSaving(false);
     navigate('/groups');
@@ -67,10 +77,10 @@ const Setup = () => {
   const handleUpdateOnly = async () => {
     if (!existingTournament) return;
 
-    const updatedParticipants = existingTournament.participants.map(p => ({
+    const updatedParticipants = participants.map(p => ({
       ...p,
-      nickname: nicknames[p.name] || p.nickname,
-      avatar: getAvatarUrl(nicknames[p.name] || p.nickname)
+      nickname: p.nickname || p.name,
+      avatar: getAvatarUrl(p.nickname || p.name)
     }));
 
     const updated: Tournament = {
@@ -129,11 +139,11 @@ const Setup = () => {
     <div className="container mt-2">
       <h2 className="mb-2 text-primary impact-text">Configuració del Torneig</h2>
       
-      <div className="flex gap-1 mb-2">
-        <button onClick={handleExport} className="flex-1 flex items-center justify-center gap-0.5" style={{ background: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid var(--color-border)', fontSize: '0.7rem' }}>
+      <div className="flex gap-1 mb-2 flex-wrap">
+        <button onClick={handleExport} className="flex-1 flex items-center justify-center gap-0.5" style={{ background: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid var(--color-border)', fontSize: '0.7rem', minWidth: '140px' }}>
           <Download size={14} /> Exportar JSON
         </button>
-        <button onClick={() => fileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-0.5" style={{ background: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid var(--color-border)', fontSize: '0.7rem' }}>
+        <button onClick={() => fileInputRef.current?.click()} className="flex-1 flex items-center justify-center gap-0.5" style={{ background: 'var(--color-surface)', color: 'var(--color-text)', border: '1px solid var(--color-border)', fontSize: '0.7rem', minWidth: '140px' }}>
           <Upload size={14} /> Importar JSON
         </button>
         <input type="file" ref={fileInputRef} onChange={handleImport} style={{ display: 'none' }} accept=".json" />
@@ -150,35 +160,63 @@ const Setup = () => {
         />
       </div>
 
-      <h3 className="mb-1 impact-text">Bladers Participants</h3>
+      <h3 className="mb-1 impact-text">Bladers Participants ({participants.length})</h3>
       <div className="setup-grid">
-        {PREDEFINED_PARTICIPANTS.map((p) => (
-          <div key={p.name} className={`participant-card ${nicknames[p.name] ? 'active' : ''}`}>
+        {participants.map((p, i) => (
+          <div key={i} className={`participant-card ${p.nickname ? 'active' : ''}`}>
             <div className="avatar-preview">
-              <img src={getAvatarUrl(nicknames[p.name])} alt={p.name} />
+              <img src={getAvatarUrl(p.nickname || p.name)} alt={p.name} />
             </div>
-            <p className="impact-text">{p.name} ({p.age})</p>
-            <input 
-              type="text" 
-              placeholder="Nickname" 
-              value={nicknames[p.name] || ''}
-              onChange={(e) => handleNicknameChange(p.name, e.target.value)}
-              style={{ padding: '0.4rem', fontSize: '0.8rem', marginTop: '0.5rem' }}
-              disabled={saving}
-            />
+            
+            <div className="flex flex-col gap-1 mt-1">
+              <input 
+                type="text" 
+                placeholder="Nom real" 
+                value={p.name}
+                onChange={(e) => handleParticipantChange(i, 'name', e.target.value)}
+                style={{ padding: '0.4rem', fontSize: '0.75rem', marginBottom: 0 }}
+                disabled={saving || hasExisting}
+                title={hasExisting ? "No es pot canviar el nom real un cop creat el torneig" : ""}
+              />
+              <input 
+                type="text" 
+                placeholder="Nickname / Alies" 
+                value={p.nickname}
+                onChange={(e) => handleParticipantChange(i, 'nickname', e.target.value)}
+                style={{ padding: '0.4rem', fontSize: '0.75rem', marginBottom: 0 }}
+                disabled={saving}
+              />
+              <input 
+                type="number" 
+                placeholder="Edat" 
+                value={p.age || ''}
+                onChange={(e) => handleParticipantChange(i, 'age', parseInt(e.target.value) || 0)}
+                style={{ 
+                  padding: '0.4rem', 
+                  fontSize: '0.75rem', 
+                  marginBottom: 0,
+                  width: '100%',
+                  backgroundColor: '#000',
+                  border: '1px solid var(--color-border)',
+                  color: 'var(--color-text)',
+                  fontFamily: 'var(--font-main)'
+                }}
+                disabled={saving || hasExisting}
+              />
+            </div>
           </div>
         ))}
       </div>
 
       <div className="mt-2 flex flex-col gap-1">
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-wrap">
           {hasExisting && (
-            <button onClick={handleUpdateOnly} disabled={saving} className="flex-1 flex items-center justify-center gap-1" style={{ background: 'var(--color-accent-blue)' }}>
+            <button onClick={handleUpdateOnly} disabled={saving} className="flex-1 flex items-center justify-center gap-1" style={{ background: 'var(--color-accent-blue)', minWidth: '180px' }}>
               {saving ? <Loader2 className="animate-spin" size={20} /> : <RefreshCw size={20} />} 
-              Actualitzar Noms
+              Actualitzar Dades
             </button>
           )}
-          <button onClick={handleStartTournament} disabled={saving} className="flex-1 flex items-center justify-center gap-1">
+          <button onClick={handleStartTournament} disabled={saving} className="flex-1 flex items-center justify-center gap-1" style={{ minWidth: '180px' }}>
             {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
             {hasExisting ? 'Reiniciar i Regenerar' : 'Començar Torneig'}
           </button>

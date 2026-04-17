@@ -164,6 +164,14 @@ th {
 @media (max-width: 480px) {
   .battle-buttons-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+  
+  .battle-buttons-grid button {
+    padding: 0.75rem 0.1rem !important; 
+    font-size: 0.85rem !important;
+    min-height: 52px;
+    clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
   }
 
   .score-input-row {
@@ -174,7 +182,6 @@ th {
     width: 45px !important;
     height: 45px !important;
   }
-...
 
   .score-player .impact-text {
     font-size: 0.8rem !important;
@@ -187,6 +194,7 @@ th {
   
   .modal-content {
     padding: 1rem 0.5rem;
+    max-height: 98vh;
   }
 }
 

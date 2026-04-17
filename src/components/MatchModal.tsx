@@ -147,28 +147,28 @@ const MatchModal = ({ match, p1, p2, onClose, onSave }: MatchModalProps) => {
                 <button 
                   className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p1', 'xtreme')}
-                  style={{ background: 'var(--color-primary)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
+                  style={{ background: 'var(--color-primary)', color: '#000' }}
                 >
                   <Zap size={18} /> Xtreme (3)
                 </button>
                 <button 
                   className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p1', 'over')}
-                  style={{ background: 'var(--color-accent-blue)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
+                  style={{ background: 'var(--color-accent-blue)', color: '#000' }}
                 >
                   <Shield size={18} /> Over (2)
                 </button>
                 <button 
                   className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p1', 'burst')}
-                  style={{ background: 'var(--color-accent-red)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
+                  style={{ background: 'var(--color-accent-red)', color: '#000' }}
                 >
                   <Sword size={18} /> Burst (2)
                 </button>
                 <button 
                   className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p1', 'spin')}
-                  style={{ background: 'var(--color-text-dim)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
+                  style={{ background: 'var(--color-text-dim)', color: '#000' }}
                 >
                   <RotateCcw size={18} /> Spin (1)
                 </button>
@@ -182,28 +182,28 @@ const MatchModal = ({ match, p1, p2, onClose, onSave }: MatchModalProps) => {
                 <button 
                   className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p2', 'xtreme')}
-                  style={{ background: 'var(--color-primary)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
+                  style={{ background: 'var(--color-primary)', color: '#000' }}
                 >
                   <Zap size={18} /> Xtreme (3)
                 </button>
                 <button 
                   className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p2', 'over')}
-                  style={{ background: 'var(--color-accent-blue)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
+                  style={{ background: 'var(--color-accent-blue)', color: '#000' }}
                 >
                   <Shield size={18} /> Over (2)
                 </button>
                 <button 
                   className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p2', 'burst')}
-                  style={{ background: 'var(--color-accent-red)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
+                  style={{ background: 'var(--color-accent-red)', color: '#000' }}
                 >
                   <Sword size={18} /> Burst (2)
                 </button>
                 <button 
                   className="flex flex-col items-center justify-center gap-0.5" 
                   onClick={() => handleFinish('p2', 'spin')}
-                  style={{ background: 'var(--color-text-dim)', color: '#000', fontSize: '0.75rem', padding: '0.75rem 0.25rem' }}
+                  style={{ background: 'var(--color-text-dim)', color: '#000' }}
                 >
                   <RotateCcw size={18} /> Spin (1)
                 </button>
